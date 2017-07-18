@@ -29,6 +29,16 @@
       <div class="navbar-header">
         <a class="navbar-brand" href="http://www.asciibinder.org/"><img alt="AsciiBinder" src="<%= File.join(images_path, "asciibinder-logo-horizontal.png") %>"></a>
       </div>
+      <div class="search-wrapper">
+        <form action="/search.html" class="navbar-form" role="search">
+          <div class="input-group">
+              <input type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term">
+              <div class="input-group-btn">
+                  <button class="btn btn-default" type="submit" style="padding: 9px"><i class="glyphicon glyphicon-search"></i></button>
+              </div>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
   <div class="container">

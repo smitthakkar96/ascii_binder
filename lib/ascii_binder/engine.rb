@@ -16,6 +16,8 @@ require 'pathname'
 require 'sitemap_generator'
 require 'trollop'
 require 'yaml'
+require 'nokogiri'
+
 
 include AsciiBinder::Helpers
 
@@ -442,6 +444,18 @@ module AsciiBinder
       end
     end
 
+    def parse_page_content(text)
+      content = ''
+      doc = Nokogiri::HTML(text)
+      doc.css('div.paragraph p').each do |paragraph|
+        content += paragraph.text
+        content += "\n"
+        puts paragraph
+      end
+      return content
+    end
+
+
     def configure_and_generate_page(topic,branch_config,navigation)
       distro = branch_config.distro
       topic_adoc = File.open(topic.source_path,'r').read
@@ -505,7 +519,33 @@ module AsciiBinder
       }
       full_file_text = page(page_args)
       File.write(preview_path,full_file_text)
+      page_content = parse_page_content(doc.render)
+      topic_url = page_args[:topic_url][page_args[:topic_url].index('_preview') + 8..-1].sub("/" + page_args[:distro_key], "")
+      data_to_put_in_json = {
+        :site_name => page_args[:distro_key],
+        :version => page_args[:version],
+        :topic_url => topic_url,
+        :article_title => page_args[:article_title],
+        :content => page_content
+      }
+      json_file = File.open(docs_root_dir+'/data.json','a+')
+      content = json_file.read()
+      if content == "" then
+        content = []
+      else
+        content = JSON.parse(content)
+      end
+
+      content << data_to_put_in_json
+
+      json_file.truncate(0)
+      json_file.puts content.to_json
+      json_file.close()
+      full_file_text = page(page_args)
+      File.write(preview_path,full_file_text)
     end
+
+
 
     # package_docs
     # This method generates the docs and then organizes them the way they will be arranged

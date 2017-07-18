@@ -1,0 +1,118 @@
+<title>Search</title>
+<meta charset="utf-8">
+<meta content="IE=edge" http-equiv="X-UA-Compatible">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta content="AsciiBinder" name="application-name">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="_stylesheets/asciibinder.css">
+<script src="_javascripts/elasticlunr.min.js"></script>
+<script src="_javascripts/elipsity.min.js"></script>
+
+<body>
+
+    <div class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="http://www.asciibinder.org/"><img alt="AsciiBinder" src="_images/asciibinder-logo-horizontal.png"></a>
+            </div>
+            <div class="search-wrapper">
+                <form action="/search.html" class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" type="submit" style="padding: 9px"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="search-results-wrapper">
+
+        </div>
+    </div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script>
+        var url = new URL(window.location.href);
+        var searchText = url.searchParams.get('srch-term');
+
+        $('#srch-term').val(searchText);
+        $.get('/data.json', function(data) {
+            console.log(data);
+            // idx = lunr(function(){
+
+
+            // });
+
+            var keys = Object.keys(data[0]);
+            index = elasticlunr(function() {
+                for (var i = 0; i < keys.length; i++) {
+                    this.addField(keys[i]);
+                }
+                this.setRef("topic_url");
+            });
+
+            for (var i = 0; i < data.length; i++) {
+                console.log(data[i]);
+                index.addDoc(data[i]);
+            }
+            var searchResults = index.search(searchText);
+            var resultsMarkup = "";
+
+            for (let i = 0; i < searchResults.length; i++) {
+                var html = `
+                <div class="result">
+                  <a class="page-title" href="${searchResults}">${searchResults[i].doc.article_title}</a>
+                  <span class="distro-name">${searchResults[i].doc.version}</span>
+                  <p class="description">${searchResults[i].doc.content}</p>
+                </div>
+            `
+                resultsMarkup += html;
+            }
+
+            $('.search-results-wrapper').html(resultsMarkup);
+
+            var paragraphs = $('p.description');
+            for (let i = 0; i < paragraphs.length; i++) {
+                var text = paragraphs[i].innerHTML;
+                if (text.length > 325) {
+                    text = text.slice(0, 325);
+                    text += '...';
+                }
+                paragraphs[i].innerHTML = text;
+            }
+
+
+        })
+    </script>
+    <style>
+        .distro-name {
+            color: white;
+            background: green;
+            text-align: center;
+            padding: 2px;
+            border-radius: 2px;
+            font-size: medium;
+            font-weight: 800;
+            text-decoration: none;
+        }
+        
+        .search-results {
+            font-size: medium;
+        }
+        
+        .page-title {
+            cursor: pointer
+        }
+        
+        .description {
+            height: 50px
+        }
+    </style>
+
+</body>
