@@ -305,6 +305,10 @@ when "package"
   call_generate(branch_group,'',nil)
   package_docs(package_site)
   system("mv data.json _package/main")
+  system("mkdir _package/main/_javascripts")
+  system("cp _templates/search.html _package/main")
+  system("cp _templates/_javascripts/elasticlunr.min.js _package/main/_javascripts")
+
 when "watch"
   if !dir_empty?(preview_dir)
     guardfile_path = File.join(Gem::Specification.find_by_name("ascii_binder").full_gem_path, 'Guardfile')
