@@ -7,7 +7,6 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
 <link rel="stylesheet" href="_stylesheets/asciibinder.css">
 <script src="_javascripts/elasticlunr.min.js"></script>
-<script src="_javascripts/elipsity.min.js"></script>
 
 <body>
 
@@ -67,7 +66,7 @@
             for (let i = 0; i < searchResults.length; i++) {
                 var html = `
                 <div class="result">
-                  <a class="page-title" href="${searchResults}">${searchResults[i].doc.article_title}</a>
+                  <a class="page-title" href="${searchResults[i].doc.topic_url}">${searchResults[i].doc.article_title}</a>
                   <span class="distro-name">${searchResults[i].doc.version}</span>
                   <p class="description">${searchResults[i].doc.content}</p>
                 </div>

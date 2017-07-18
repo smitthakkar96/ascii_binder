@@ -307,7 +307,7 @@ when "package"
   system("mv data.json _package/main")
   system("mkdir _package/main/_javascripts")
   system("cp _templates/search.html _package/main")
-  system("cp _templates/_javascripts/elasticlunr.min.js _package/main/_javascripts")
+  system("cp _javascripts/elasticlunr.min.js _package/main/_javascripts")
 
 when "watch"
   if !dir_empty?(preview_dir)
